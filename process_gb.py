@@ -50,8 +50,10 @@ batch_size = 100
 batch = []
 all_results = {}
 
-accessions_list = pd.read_csv("genbank_accs.txt").id.values
-accessions_list = np.random.choice(accessions_list, size=100000,
+accessions_list = pd.read_csv(
+    "../amp72/Amplicon72/delta_gb.csv").genbank_accession.values
+print(accessions_list.shape)
+accessions_list = np.random.choice(accessions_list, size=5000,
                                    replace=False).tolist()
 print(len(accessions_list))
 
@@ -60,7 +62,12 @@ for accession in tqdm.tqdm(accessions_list):
     batch.append(accession)
     if len(batch) == batch_size:
         print("s")
-        results = get_sra_from_list(batch)
+        results = None
+        while results == None:
+            try:
+                results = get_sra_from_list(batch)
+            except Exception as e:
+                print("There was a problem with", e, batch)
         print("e")
         all_results.update(results)
         batch = []
